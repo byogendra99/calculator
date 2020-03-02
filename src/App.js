@@ -1,26 +1,60 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import "./App.css";
+import Display from "./Components/display";
+import Keypad from "./Components/keypad";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  state = {
+    expression: ""
+  };
+  handleKey = key => {
+    if (key === "AC") {
+      this.setState({ expression: "" });
+    } else if (key === "=") {
+      let exp = this.state.expression;
+      exp = eval(exp);
+      exp = exp.toString();
+      if (exp === "0") {
+        this.setState({ expression: "" });
+      } else if (exp.charAt(0) === "-") {
+        exp = "(" + exp + ")";
+        this.setState({ expression: exp });
+      } else {
+        this.setState({ expression: exp });
+      }
+    } else {
+      let exp = this.state.expression;
+      let operator = exp.charAt(exp.length - 1);
+      //console.log(operator);
+      if (
+        operator === "*" ||
+        operator === "-" ||
+        operator === "+" ||
+        operator === "/"
+      ) {
+        if (key === "*" || key === "/" || key === "+" || key === "-") {
+          exp = exp.substr(0, exp.length - 1);
+          console.log(exp);
+          exp = exp + key;
+          this.setState({ expression: exp });
+        } else {
+          exp = exp + key;
+          this.setState({ expression: exp });
+        }
+      } else {
+        exp = exp + key;
+        this.setState({ expression: exp });
+      }
+    }
+  };
+  render() {
+    return (
+      <div className="App">
+        <Display expression={this.state.expression}></Display>
+        <Keypad onClick={this.handleKey}></Keypad>
+      </div>
+    );
+  }
 }
 
 export default App;
